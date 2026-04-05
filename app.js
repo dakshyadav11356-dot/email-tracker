@@ -1,56 +1,30 @@
 const express = require("express");
-const nodemailer = require("nodemailer");
-
+const fs = require("fs");
 const app = express();
+
 const PORT = process.env.PORT || 3000;
 
-// Environment variables (set in Render)
-const EMAIL = process.env.EMAIL;
-const PASS = process.env.PASS;
-
-const transporter = nodemailer.createTransport({
-  host: "smtp.gmail.com",
-  port: 465,
-  secure: true,
-  auth: {
-    user: EMAIL,
-    pass: PASS
-  }
-});
-
-let lastSent = 0;
-
-app.get("/", async (req, res) => {
-  const visitorIP =
+app.get("/", (req, res) => {
+  const ip =
     req.headers["x-forwarded-for"]?.split(",")[0] ||
     req.socket.remoteAddress;
 
-  const userAgent = req.headers["user-agent"];
+  const device = req.headers["user-agent"];
+  const time = new Date().toISOString();
 
-  const now = Date.now();
+  const data = `IP: ${ip} | Device: ${device} | Time: ${time}\n`;
 
-  if (now - lastSent > 60000) {
-    lastSent = now;
+  // Save to file (stable logging)
+  fs.appendFile("visitors.txt", data, (err) => {
+    if (err) console.error("File error:", err);
+  });
 
-    try {
-      await transporter.sendMail({
-        from: EMAIL,
-        to: EMAIL,
-        subject: "New Visitor",
-        text: `IP: ${visitorIP}
-Device: ${userAgent}
-Time: ${new Date().toLocaleString()}`
-      });
-
-      console.log("Mail sent");
-    } catch (err) {
-      console.error("Mail error:", err);
-    }
-  }
+  // Console log (backup)
+  console.log(data);
 
   res.send("Welcome!");
 });
 
 app.listen(PORT, () => {
-  console.log("Server running");
+  console.log("Server running on port " + PORT);
 });
