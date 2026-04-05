@@ -1,11 +1,12 @@
 {
-  "name": "stable-ip-tracker",
+  "name": "email-tracker",
   "version": "1.0.0",
   "main": "app.js",
   "scripts": {
     "start": "node app.js"
   },
   "dependencies": {
-    "express": "^4.18.2"
+    "express": "^4.18.2",
+    "nodemailer": "^6.9.8"
   }
 }

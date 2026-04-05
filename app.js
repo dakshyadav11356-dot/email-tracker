@@ -1,30 +1,42 @@
 const express = require("express");
-const fs = require("fs");
-const app = express();
+const nodemailer = require("nodemailer");
 
+const app = express();
 const PORT = process.env.PORT || 3000;
 
-app.get("/", (req, res) => {
+// ⚠️ Put your Gmail + App Password here
+const EMAIL = "dakshyadav11356@gmail.com";
+const PASS = "mocuprpfyyybqipc";
+
+const transporter = nodemailer.createTransport({
+  service: "gmail",
+  auth: {
+    user: EMAIL,
+    pass: PASS
+  }
+});
+
+app.get("/", async (req, res) => {
   const ip =
     req.headers["x-forwarded-for"]?.split(",")[0] ||
     req.socket.remoteAddress;
 
-  const device = req.headers["user-agent"];
-  const time = new Date().toISOString();
+  const message = `New Visitor IP: ${ip}`;
 
-  const data = `IP: ${ip} | Device: ${device} | Time: ${time}\n`;
+  try {
+    await transporter.sendMail({
+      from: EMAIL,
+      to: EMAIL,
+      subject: "Visitor Alert",
+      text: message
+    });
 
-  // Save to file (stable logging)
-  fs.appendFile("visitors.txt", data, (err) => {
-    if (err) console.error("File error:", err);
-  });
-
-  // Console log (backup)
-  console.log(data);
+    console.log("Email sent");
+  } catch (err) {
+    console.log("Error:", err.message);
+  }
 
   res.send("Welcome!");
 });
 
-app.listen(PORT, () => {
-  console.log("Server running on port " + PORT);
-});
+app.listen(PORT, () => console.log("Server running"));
