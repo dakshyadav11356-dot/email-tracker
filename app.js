@@ -5,7 +5,7 @@ const app = express();
 const PORT = process.env.PORT || 3000;
 
 // 🔐 Paste your Resend API key here
-const API_KEY = "PASTE_YOUR_RESEND_API_KEY";
+const API_KEY = "re_NjVt8PU1_DFf2WzHQRjZtnQ3ZYgWjmZpx";
 
 // 🔐 Your email
 const EMAIL = "dakshyadav11356@gmail.com";
@@ -21,7 +21,7 @@ app.get("/", async (req, res) => {
     const response = await fetch("https://api.resend.com/emails", {
       method: "POST",
       headers: {
-        "Authorization": `Bearer ${re_NjVt8PU1_DFf2WzHQRjZtnQ3ZYgWjmZpx}`,
+        "Authorization": `Bearer ${API_KEY}`,
         "Content-Type": "application/json"
       },
       body: JSON.stringify({
