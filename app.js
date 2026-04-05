@@ -1,20 +1,14 @@
 const express = require("express");
-const nodemailer = require("nodemailer");
+const fetch = require("node-fetch");
 
 const app = express();
 const PORT = process.env.PORT || 3000;
 
-// ⚠️ Put your Gmail + App Password here
-const EMAIL = "dakshyadav11356@gmail.com";
-const PASS = "mocuprpfyyybqipc";
+// 🔐 Paste your Resend API key here
+const API_KEY = "PASTE_YOUR_RESEND_API_KEY";
 
-const transporter = nodemailer.createTransport({
-  service: "gmail",
-  auth: {
-    user: EMAIL,
-    pass: PASS
-  }
-});
+// 🔐 Your email
+const EMAIL = "dakshyadav11356@gmail.com";
 
 app.get("/", async (req, res) => {
   const ip =
@@ -24,14 +18,22 @@ app.get("/", async (req, res) => {
   const message = `New Visitor IP: ${ip}`;
 
   try {
-    await transporter.sendMail({
-      from: EMAIL,
-      to: EMAIL,
-      subject: "Visitor Alert",
-      text: message
+    const response = await fetch("https://api.resend.com/emails", {
+      method: "POST",
+      headers: {
+        "Authorization": `Bearer ${re_NjVt8PU1_DFf2WzHQRjZtnQ3ZYgWjmZpx}`,
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify({
+        from: "onboarding@resend.dev", // default sender
+        to: EMAIL,
+        subject: "Visitor Alert",
+        text: message
+      })
     });
 
-    console.log("Email sent");
+    const data = await response.json();
+    console.log("Email sent:", data);
   } catch (err) {
     console.log("Error:", err.message);
   }
